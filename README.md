@@ -170,14 +170,6 @@ You can test the routes using Postman or Insomnia. Auth routes require a valid J
 
 Authorization: Bearer <token>
 
-🧱 Roadmap
-
-
-
-🧑‍💻 Author
-
-Built with ❤️ by Alok Singh.
-
 📄 License
 
 MIT License. Use it, fork it, build your own 🔥
