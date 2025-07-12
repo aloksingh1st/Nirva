@@ -4,6 +4,7 @@ import { authGuard } from "./middlewares/authGuard";
 import passport from "passport";
 import authRoutes from "./routes/auth";
 import "./strategies/google";
+import "./strategies/github";
 dotenv.config();
 
 
@@ -11,7 +12,7 @@ const app = express();
 const port = 3000;
 
 interface TypedRequest extends Request {
-  user?: any; // or a proper User type
+  user?: any;
 }
 
 app.use(express.json());
