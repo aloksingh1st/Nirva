@@ -17,8 +17,9 @@ datasource db {
 model User {
   id        String   @id @default(uuid())
   name      String
+  password  String? //optional if you are using oauth
   email     String?  @unique
-  oauthId   String   @unique
+  oauthId   String? // nullable for non-OAuth users
   provider  String
   createdAt DateTime @default(now())
 }

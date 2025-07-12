@@ -2,11 +2,12 @@ import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import { authGuard } from "./middlewares/authGuard";
 import passport from "passport";
-import authRoutes from "./routes/auth";
+import authRoutes from "./routes/auth.routes";
 import "./strategies/google";
 import "./strategies/github";
-dotenv.config();
+import cookieParser from "cookie-parser";
 
+dotenv.config();
 
 const app = express();
 const port = 3000;
@@ -15,6 +16,7 @@ interface TypedRequest extends Request {
   user?: any;
 }
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(passport.initialize());
 app.use("/auth", authRoutes);
