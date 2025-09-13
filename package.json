@@ -1,0 +1,26 @@
+{
+  "name": "entrixsdk",
+  "version": "1.0.0",
+  "description": "A lightweight, modular authentication SDK for seamless integration of Entrix auth (OAuth + JWT) into your React apps.",
+ "main": "dist/index.js",
+"module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup src/index.ts --format cjs,esm --dts"
+
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0"
+  },
+  "bin": {
+    "entrix": "./cli/init.js"
+  }
+}
