@@ -1,11 +1,16 @@
-
 // @ts-ignore
-import { configureEntrix, loginGoogle, getMe, logout } from "entrixsdk";
+import {
+  configureEntrix,
+  loginGoogle,
+  getMe,
+  logout,
+  loginGithub,
+} from "nirva";
 
 // Auto-configure Entrix SDK with default base URL
 configureEntrix({
-  baseUrl: "http://localhost:3000",
+  baseUrl: "http://localhost:8000",
   tokenStorage: "cookie",
 });
 
-export { loginGoogle, getMe, logout };
+export { loginGoogle, getMe, logout, loginGithub };

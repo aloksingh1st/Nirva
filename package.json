@@ -1,5 +1,5 @@
 {
-  "name": "entrixsdk",
+  "name": "nirva",
   "version": "1.0.0",
   "description": "A lightweight, modular authentication SDK for seamless integration of Entrix auth (OAuth + JWT) into your React apps.",
  "main": "dist/index.js",
@@ -21,6 +21,6 @@
     "tsup": "^8.5.0"
   },
   "bin": {
-    "entrix": "./cli/init.js"
+    "nirva": "./cli/init.js"
   }
 }

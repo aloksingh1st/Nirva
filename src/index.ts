@@ -9,6 +9,14 @@ export const loginGoogle = () => {
   window.location.href = url;
 };
 
+
+export const loginGithub = () => {
+  const { baseUrl } = getEntrixConfig();
+  const url = `${baseUrl}/auth/github`;
+  window.location.href = url;
+};
+
+
 export const getMe = async () => {
   const { baseUrl } = getEntrixConfig();
   const res = await fetch(`${baseUrl}/auth/me`, {

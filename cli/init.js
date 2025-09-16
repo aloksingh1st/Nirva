@@ -25,12 +25,13 @@ const path = require("path");
     fs.mkdirSync(pagesDir, { recursive: true });
 
     const loginPageContent = `import React from "react";
-import { LoginButton, LogoutButton, UserInfo } from "../components/auth";
+import { LoginGoogle, LoginGithub, LogoutButton, UserInfo } from "../components/auth";
 
 const Login = () => (
   <div className="flex flex-col items-center justify-center min-h-screen gap-4">
     <h1 className="text-2xl font-bold">Entrix Auth Demo</h1>
-    <LoginButton />
+    <LoginGoogle />
+    <LoginGithub />
     <LogoutButton />
     <UserInfo />
   </div>

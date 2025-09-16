@@ -51,6 +51,11 @@ var loginGoogle = () => {
   const url = `${baseUrl}/auth/google`;
   window.location.href = url;
 };
+var loginGithub = () => {
+  const { baseUrl } = getEntrixConfig();
+  const url = `${baseUrl}/auth/github`;
+  window.location.href = url;
+};
 var getMe = () => __async(null, null, function* () {
   const { baseUrl } = getEntrixConfig();
   const res = yield fetch(`${baseUrl}/auth/me`, {
@@ -77,6 +82,7 @@ var logout = () => __async(null, null, function* () {
 export {
   configureEntrix2 as configureEntrix,
   getMe,
+  loginGithub,
   loginGoogle,
   logout
 };

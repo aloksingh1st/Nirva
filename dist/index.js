@@ -42,6 +42,7 @@ var index_exports = {};
 __export(index_exports, {
   configureEntrix: () => configureEntrix2,
   getMe: () => getMe,
+  loginGithub: () => loginGithub,
   loginGoogle: () => loginGoogle,
   logout: () => logout
 });
@@ -79,6 +80,11 @@ var loginGoogle = () => {
   const url = `${baseUrl}/auth/google`;
   window.location.href = url;
 };
+var loginGithub = () => {
+  const { baseUrl } = getEntrixConfig();
+  const url = `${baseUrl}/auth/github`;
+  window.location.href = url;
+};
 var getMe = () => __async(null, null, function* () {
   const { baseUrl } = getEntrixConfig();
   const res = yield fetch(`${baseUrl}/auth/me`, {
@@ -106,6 +112,7 @@ var logout = () => __async(null, null, function* () {
 0 && (module.exports = {
   configureEntrix,
   getMe,
+  loginGithub,
   loginGoogle,
   logout
 });
