@@ -1,3 +1,19 @@
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -24,7 +40,7 @@ var config = null;
 var configureEntrix = (options) => {
   var _a;
   if (!options.baseUrl) {
-    throw new Error("Entrix configuration error: baseUrl is required");
+    throw new Error("Nirva configuration error: baseUrl is required");
   }
   const normalizedUrl = options.baseUrl.replace(/\/$/, "");
   config = {
@@ -35,7 +51,7 @@ var configureEntrix = (options) => {
 var ensureConfigured = () => {
   if (!config) {
     throw new Error(
-      "Entrix SDK not configured. Call configureEntrix(...) first."
+      "Nirva SDK not configured. Call configureEntrix(...) first."
     );
   }
   return config;
@@ -57,11 +73,17 @@ var loginGithub = () => {
   window.location.href = url;
 };
 var getMe = () => __async(null, null, function* () {
+  var _a;
   const { baseUrl } = getEntrixConfig();
+  const token = (_a = document.cookie.split("; ").find((row) => row.startsWith("token="))) == null ? void 0 : _a.split("=")[1];
+  console.log(token);
   const res = yield fetch(`${baseUrl}/auth/me`, {
     method: "GET",
     credentials: "include",
-    headers: { "Content-Type": "application/json" }
+    // still includes cookies
+    headers: __spreadValues({
+      "Content-Type": "application/json"
+    }, token ? { Authorization: `Bearer ${token}` } : {})
   });
   if (!res.ok) {
     throw new Error(`Failed to fetch user: ${res.status} ${res.statusText}`);

@@ -14,7 +14,7 @@ let config: EntrixConfig | null = null;
 export const configureEntrix = (options: EntrixConfig) => {
   
   if (!options.baseUrl) {
-    throw new Error("Entrix configuration error: baseUrl is required");
+    throw new Error("Nirva configuration error: baseUrl is required");
   }
 
   const normalizedUrl = options.baseUrl.replace(/\/$/, ""); // remove trailing slash
@@ -31,7 +31,7 @@ export const configureEntrix = (options: EntrixConfig) => {
 export const ensureConfigured = () => {
   if (!config) {
     throw new Error(
-      "Entrix SDK not configured. Call configureEntrix(...) first."
+      "Nirva SDK not configured. Call configureEntrix(...) first."
     );
   }
   return config;
