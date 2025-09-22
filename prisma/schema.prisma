@@ -19,7 +19,7 @@ model User {
   name      String
   password  String? //optional if you are using oauth
   email     String?  @unique
-  oauthId   String? // nullable for non-OAuth users
+  oauthId   String?  @unique  // nullable for non-OAuth users
   provider  String
   createdAt DateTime @default(now())
 }
