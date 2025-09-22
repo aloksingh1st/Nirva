@@ -12,7 +12,7 @@ passport.use(
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
       callbackURL: "http://localhost:3000/auth/github/callback",
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (profile: any, done: any) => {
       try {
         const email =
           profile.emails?.[0]?.value || `${profile.username}@github.com`;

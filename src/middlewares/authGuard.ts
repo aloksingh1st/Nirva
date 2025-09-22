@@ -41,6 +41,7 @@ export const authGuard = (
   }
 
   try {
+    //@ts-ignore
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
     req.user = decoded;
     next();

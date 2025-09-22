@@ -41,12 +41,9 @@ router.get(
     failureRedirect: "/", // redirect on error
   }),
   (req, res) => {
-    // @ts-ignore
-
-    console.log(req);
+    //@ts-ignore
     const token = generateToken(req.user);
 
-    console.log(token);
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

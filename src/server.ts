@@ -36,6 +36,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello TypeScript with Express!");
 });
 
+
+//@ts-ignore
 app.get("/auth/me", authGuard, (req: TypedRequest, res: Response) => {
   
   res.json({ user: req.user });
