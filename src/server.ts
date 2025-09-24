@@ -17,29 +17,25 @@ interface TypedRequest extends Request {
   user?: any;
 }
 
-
-
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true, // if you are using cookies/auth headers
-}));
-
-
-
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true, // if you are using cookies/auth headers
+  })
+);
 
 app.use(cookieParser());
 app.use(express.json());
 app.use(passport.initialize());
+
 app.use("/auth", authRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello TypeScript with Express!");
 });
 
-
 //@ts-ignore
 app.get("/auth/me", authGuard, (req: TypedRequest, res: Response) => {
-  
   res.json({ user: req.user });
 });
 

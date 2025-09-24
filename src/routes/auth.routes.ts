@@ -1,7 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
 import { generateToken } from "../services/tokenService";
-import * as AuthController from "../controllers/auth.controller";
+import { register } from "../controllers/auth.controller";
 
 const router = Router();
 
@@ -56,8 +56,8 @@ router.get(
   }
 );
 
-router.post("/register", AuthController.register);
-router.post("/login", AuthController.login);
-router.post("/logout", AuthController.logout);
+router.post("/register", register);
+// router.post("/login", login);
+// router.post("/logout", AuthController.logout);
 
 export default router;

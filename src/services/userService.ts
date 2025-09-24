@@ -40,7 +40,16 @@ export const register = async (
   password: string,
   name: string
 ) => {
+  const existingUser = await db.user.findUnique({
+    where: { email },
+  });
+
+  if (existingUser) {
+    throw new Error("User already registered");
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
+
   const user = await db.user.create({
     data: {
       email,
@@ -49,7 +58,12 @@ export const register = async (
       provider: "local",
     },
   });
-  return { id: user.id, email: user.email };
+
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+  };
 };
 
 // 🟢 For Local Login
