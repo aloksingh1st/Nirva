@@ -1,6 +1,7 @@
-import { LoginGoogle } from "./LoginGoogle";
-import { LoginGithub } from "./LoginGithub";
+import { GoogleButton } from "./LoginGoogle";
+import { GithubButton } from "./LoginGithub";
 import { LogoutButton } from "./LogoutButton";
 import { UserInfo } from "./UserInfo";
+import { EmailForm } from "./EmailForm";
 
-export { LoginGithub, LoginGoogle, LogoutButton, UserInfo };
+export { GithubButton, GoogleButton, LogoutButton, UserInfo, EmailForm };

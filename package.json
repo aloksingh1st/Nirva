@@ -17,6 +17,9 @@
     "prompts": "^2.4.2",
     "typescript": "^5.8.3"
   },
+  "peerDependencies": {
+  "react-router-dom": "^7.0.0"
+  },
   "devDependencies": {
     "tsup": "^8.5.0"
   },

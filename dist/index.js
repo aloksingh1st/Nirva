@@ -58,7 +58,9 @@ __export(index_exports, {
   getMe: () => getMe,
   loginGithub: () => loginGithub,
   loginGoogle: () => loginGoogle,
-  logout: () => logout
+  loginWithEmail: () => loginWithEmail,
+  logout: () => logout,
+  registerWithEmail: () => registerWithEmail
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -87,6 +89,24 @@ var getEntrixConfig = () => {
   return ensureConfigured();
 };
 
+// src/http/index.ts
+function request(_0, _1, _2) {
+  return __async(this, arguments, function* (url, method, body, headers = {}) {
+    const response = yield fetch(url, {
+      method,
+      headers: __spreadValues({
+        "Content-Type": "application/json"
+      }, headers),
+      body: body ? JSON.stringify(body) : void 0
+    });
+    if (!response.ok) {
+      const error = yield response.json().catch(() => ({}));
+      throw new Error(error.message || `Request failed: ${response.status}`);
+    }
+    return response.json();
+  });
+}
+
 // src/index.ts
 var configureEntrix2 = configureEntrix;
 var loginGoogle = () => {
@@ -100,23 +120,31 @@ var loginGithub = () => {
   window.location.href = url;
 };
 var getMe = () => __async(null, null, function* () {
-  var _a;
   const { baseUrl } = getEntrixConfig();
-  const token = (_a = document.cookie.split("; ").find((row) => row.startsWith("token="))) == null ? void 0 : _a.split("=")[1];
-  console.log(token);
   const res = yield fetch(`${baseUrl}/auth/me`, {
     method: "GET",
     credentials: "include",
-    // still includes cookies
-    headers: __spreadValues({
-      "Content-Type": "application/json"
-    }, token ? { Authorization: `Bearer ${token}` } : {})
+    headers: { "Content-Type": "application/json" }
   });
   if (!res.ok) {
     throw new Error(`Failed to fetch user: ${res.status} ${res.statusText}`);
   }
   return res.json();
 });
+function loginWithEmail(formData) {
+  return __async(this, null, function* () {
+    const { email, password } = formData;
+    const { baseUrl } = getEntrixConfig();
+    return request(`${baseUrl}/auth/login`, "POST", { email, password });
+  });
+}
+function registerWithEmail(formData) {
+  return __async(this, null, function* () {
+    const { baseUrl } = getEntrixConfig();
+    const { name, email, password } = formData;
+    return request(`${baseUrl}/auth/register`, "POST", { name, email, password });
+  });
+}
 var logout = () => __async(null, null, function* () {
   const { baseUrl } = getEntrixConfig();
   const res = yield fetch(`${baseUrl}/auth/logout`, {
@@ -134,6 +162,8 @@ var logout = () => __async(null, null, function* () {
   getMe,
   loginGithub,
   loginGoogle,
-  logout
+  loginWithEmail,
+  logout,
+  registerWithEmail
 });
 //# sourceMappingURL=index.js.map

@@ -2,6 +2,33 @@
 const fs = require("fs");
 const path = require("path");
 const prompts = require("prompts");
+const { execSync } = require("child_process");
+
+
+
+function getPkgManager(projectRoot) {
+  if (fs.existsSync(path.join(projectRoot, "yarn.lock"))) return "yarn";
+  if (fs.existsSync(path.join(projectRoot, "pnpm-lock.yaml"))) return "pnpm";
+  return "npm";
+}
+
+
+function resolveAppFile(projectRoot, lang) {
+  // possible extensions based on lang
+  const extensions = [
+    lang,                // js or ts
+    lang + "x"           // jsx or tsx
+  ];
+
+  for (const ext of extensions) {
+    const filePath = path.join(projectRoot, "src", `App.${ext}`);
+    if (fs.existsSync(filePath)) {
+      return filePath; // return first one found
+    }
+  }
+
+  return null; // not found
+}
 
 
 const init = async () => {
@@ -51,35 +78,39 @@ const init = async () => {
     fs.writeFileSync(path.join(authDir, "sdk." + response.lang), sdkTemplate);
 
     // 4️⃣ Create src/pages/Login.tsx
-    const pagesDir = path.join(projectRoot, "src/pages");
-    fs.mkdirSync(pagesDir, { recursive: true });
+    const pagesDirectory = path.join(projectRoot, "src/pages");
+    fs.mkdirSync(pagesDirectory, { recursive: true });
 
-    const loginPageContent = `import React from "react";
-import { LoginGoogle, LoginGithub, LogoutButton, UserInfo } from "../components/auth";
+    const pagesDir = path.join(__dirname, "../templates/pages/" + response.lang);
 
-const Login = () => (
-  <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-    <h1 className="text-2xl font-bold">Entrix Auth Demo</h1>
-    <LoginGoogle />
-    <LoginGithub />
-    <LogoutButton />
-    <UserInfo />
-  </div>
-);
+    fs.readdirSync(pagesDir).forEach((file) => {
+      fs.copyFileSync(path.join(pagesDir, file), path.join(path.join(projectRoot, "src/pages"), file));
+    });
 
-export default Login;
-`;
-
-    fs.writeFileSync(path.join(pagesDir, "Login." + response.lang), loginPageContent);
 
     // 5️⃣ Update App.tsx
-    const appFile = path.join(projectRoot, "src/App." + response.lang);
+    const appFile = resolveAppFile(projectRoot, response.lang);
+
     if (fs.existsSync(appFile)) {
       const appContent = `import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
-  return <Login />;
+  return (
+    <Router>
+      <Routes>
+        {/* Redirect root to login */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
+        {/* Login + Register routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
@@ -87,6 +118,13 @@ export default App;
       fs.writeFileSync(appFile, appContent);
     }
 
+    const pkgManager = getPkgManager(projectRoot);
+
+    // console.log(`📦 Installing dependencies (react-router-dom) with ${pkgManager}...`);
+    // execSync(`${pkgManager} add react-router-dom`, { stdio: "inherit", cwd: projectRoot });
+
+
+    
     console.log("✅ Nirva SDK initialized! Components, SDK, and Login page created.");
   } catch (err) {
     console.error("❌ Nirva init failed:", err);
