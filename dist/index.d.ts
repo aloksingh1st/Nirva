@@ -3,6 +3,11 @@ interface EntrixConfig {
     tokenStorage?: "cookie" | "localStorage";
 }
 
+declare const NirvaProvider: () => string;
+declare const useEntrixKey: (apiKey: string) => string;
+
+declare const initEntrixClient: (key: string) => void;
+
 interface FormData {
     name: string;
     email: string;
@@ -20,4 +25,4 @@ declare function loginWithEmail(formData: LoginFormData): Promise<any>;
 declare function registerWithEmail(formData: FormData): Promise<any>;
 declare const logout: () => Promise<void>;
 
-export { configureEntrix, getMe, loginGithub, loginGoogle, loginWithEmail, logout, registerWithEmail };
+export { NirvaProvider, configureEntrix, getMe, initEntrixClient, loginGithub, loginGoogle, loginWithEmail, logout, registerWithEmail, useEntrixKey };

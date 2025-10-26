@@ -61,13 +61,25 @@ var getEntrixConfig = () => {
 };
 
 // src/http/index.ts
-function request(_0, _1, _2) {
-  return __async(this, arguments, function* (url, method, body, headers = {}) {
+var apiKey = null;
+var initEntrixClient = (key) => {
+  if (!key) throw new Error("API key is required");
+  apiKey = key;
+};
+var getApiKey = () => {
+  if (!apiKey)
+    throw new Error(
+      "Entrix client is not initialized. Call initEntrixClient first."
+    );
+  return apiKey;
+};
+function request(_0) {
+  return __async(this, arguments, function* (url, method = "GET", body, headers = {}) {
     const response = yield fetch(url, {
       method,
-      headers: __spreadValues({
+      headers: __spreadValues(__spreadValues({
         "Content-Type": "application/json"
-      }, headers),
+      }, apiKey ? { "x-nirva-key": apiKey } : {}), headers),
       body: body ? JSON.stringify(body) : void 0
     });
     if (!response.ok) {
@@ -78,11 +90,24 @@ function request(_0, _1, _2) {
   });
 }
 
+// src/contexts/NirvaContext.tsx
+var NirvaProvider = () => {
+  const apiKey2 = "somehgin";
+  if (!apiKey2) {
+    console.warn("\u26A0\uFE0F Entrix SDK: Missing Nirva Secret Key in environment.");
+  }
+  return apiKey2;
+};
+var useEntrixKey = (apiKey2) => {
+  return apiKey2;
+};
+
 // src/index.ts
 var configureEntrix2 = configureEntrix;
 var loginGoogle = () => {
   const { baseUrl } = getEntrixConfig();
-  const url = `${baseUrl}/auth/google`;
+  const key = getApiKey();
+  const url = `${baseUrl}/auth/google?x-nirva-key=${encodeURIComponent(key)}`;
   window.location.href = url;
 };
 var loginGithub = () => {
@@ -128,12 +153,15 @@ var logout = () => __async(null, null, function* () {
   }
 });
 export {
+  NirvaProvider,
   configureEntrix2 as configureEntrix,
   getMe,
+  initEntrixClient,
   loginGithub,
   loginGoogle,
   loginWithEmail,
   logout,
-  registerWithEmail
+  registerWithEmail,
+  useEntrixKey
 };
 //# sourceMappingURL=index.mjs.map

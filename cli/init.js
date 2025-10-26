@@ -61,23 +61,23 @@ const init = async () => {
 
     const projectRoot = process.cwd();
 
-    // 1️⃣ Create src/components/auth
+    // Create src/components/auth
     const authDir = path.join(projectRoot, "src/components/auth");
     fs.mkdirSync(authDir, { recursive: true });
 
-    // 2️⃣ Copy React component templates
+    // Copy React component templates
     const templatesDir = path.join(__dirname, "../templates/components/" + response.lang);
 
     fs.readdirSync(templatesDir).forEach((file) => {
       fs.copyFileSync(path.join(templatesDir, file), path.join(authDir, file));
     });
 
-    // 3️⃣ Copy SDK wrapper with default configureEntrix
+    //Copy SDK wrapper with default configureEntrix
     const sdkTemplate = fs.readFileSync(path.join(__dirname, "../templates/components/" + response.lang + "/sdk." + response.lang), "utf8");
 
     fs.writeFileSync(path.join(authDir, "sdk." + response.lang), sdkTemplate);
 
-    // 4️⃣ Create src/pages/Login.tsx
+    // Create src/pages/Login.tsx
     const pagesDirectory = path.join(projectRoot, "src/pages");
     fs.mkdirSync(pagesDirectory, { recursive: true });
 
@@ -88,7 +88,8 @@ const init = async () => {
     });
 
 
-    // 5️⃣ Update App.tsx
+
+    //  Update App.tsx
     const appFile = resolveAppFile(projectRoot, response.lang);
 
     if (fs.existsSync(appFile)) {
@@ -120,11 +121,6 @@ export default App;
 
     const pkgManager = getPkgManager(projectRoot);
 
-    // console.log(`📦 Installing dependencies (react-router-dom) with ${pkgManager}...`);
-    // execSync(`${pkgManager} add react-router-dom`, { stdio: "inherit", cwd: projectRoot });
-
-
-    
     console.log("✅ Nirva SDK initialized! Components, SDK, and Login page created.");
   } catch (err) {
     console.error("❌ Nirva init failed:", err);

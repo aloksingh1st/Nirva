@@ -12,8 +12,8 @@ const Login = ({ onSwitchToRegister }) => {
     const showToast = (message, type) => {
         setToast({ message, type });
     };
+    
     const handleGoogleLogin = () => {
-        console.log('Google login clicked');
         loginGoogle();
     };
 

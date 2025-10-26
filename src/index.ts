@@ -1,6 +1,8 @@
 import { configureEntrix as _configureEntrix, getEntrixConfig } from "./config";
 import { request } from "./http";
 
+import { getApiKey } from "./http/index";
+
 interface FormData {
   name: string;
   email: string;
@@ -30,13 +32,12 @@ export const configureEntrix = _configureEntrix;
 
 //   return res.json();
 // }
-
 export const loginGoogle = () => {
   const { baseUrl } = getEntrixConfig();
-  const url = `${baseUrl}/auth/google`;
+  const key = getApiKey();
+  const url = `${baseUrl}/auth/google?x-nirva-key=${encodeURIComponent(key)}`;
   window.location.href = url;
 };
-
 export const loginGithub = () => {
   const { baseUrl } = getEntrixConfig();
   const url = `${baseUrl}/auth/github`;
@@ -83,3 +84,6 @@ export const logout = async (): Promise<void> => {
     throw new Error(`Logout failed: ${res.status} ${res.statusText}`);
   }
 };
+
+export { NirvaProvider, useEntrixKey } from "./contexts/NirvaContext";
+export { initEntrixClient } from "./http/index";
