@@ -13,8 +13,11 @@ interface OAuthProfile {
 export const findOrCreateUser = async (
   profile: OAuthProfile,
   provider: string
+  
 ) => {
   const email = profile.emails?.[0]?.value;
+
+  // console.log(profile);
 
   let user = await db.user.findUnique({
     where: { oauthId: profile.id },
@@ -31,6 +34,7 @@ export const findOrCreateUser = async (
     });
   }
 
+  console.log("USER", user);
   return user;
 };
 
@@ -38,7 +42,8 @@ export const findOrCreateUser = async (
 export const register = async (
   email: string,
   password: string,
-  name: string
+  name: string,
+  AppUser: string
 ) => {
   const existingUser = await db.user.findUnique({
     where: { email },
@@ -56,6 +61,7 @@ export const register = async (
       name,
       password: hashedPassword,
       provider: "local",
+      app_id: AppUser,
     },
   });
 

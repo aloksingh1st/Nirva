@@ -1,7 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
 import { generateToken } from "../services/tokenService";
-import { register } from "../controllers/auth.controller";
+import { login, logout, register } from "../controllers/auth.controller";
 
 const router = Router();
 
@@ -24,7 +24,7 @@ router.get(
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.redirect(`http://localhost:3000/auth/success?token=${token}`);
+    res.redirect(`http://localhost:5173/auth/success?token=${token}`);
   }
 );
 
@@ -52,12 +52,12 @@ router.get(
     });
 
     // Redirect to frontend with token
-    res.redirect(`http://localhost:3000/auth/success?token=${token}`);
+    res.redirect(`http://localhost:5173/auth/success?token=${token}`);
   }
 );
 
 router.post("/register", register);
-// router.post("/login", login);
-// router.post("/logout", AuthController.logout);
+router.post("/login", login);
+router.post("/logout", logout);
 
 export default router;

@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { authGuard } from "./middlewares/authGuard";
 import passport from "passport";
 import authRoutes from "./routes/auth.routes";
+import appRoutes from "./routes/app.routes";
 import "./strategies/google";
 import "./strategies/github";
 import cookieParser from "cookie-parser";
@@ -19,7 +20,7 @@ interface TypedRequest extends Request {
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "http://localhost:5174",
     credentials: true, // if you are using cookies/auth headers
   })
 );
@@ -29,6 +30,7 @@ app.use(express.json());
 app.use(passport.initialize());
 
 app.use("/auth", authRoutes);
+app.use("/apps", appRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello TypeScript with Express!");

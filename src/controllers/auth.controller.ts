@@ -1,51 +1,73 @@
 import { Request, Response } from "express";
 import * as AuthService from "../services/userService";
+import { findAppUser } from "../services/findAppUserService";
 
-export const register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password, name } = req.body;
 
+    // Validate required fields
     if (!email || !password || !name) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Email, password, and name are required",
       });
+      return;
     }
 
-    const user = await AuthService.register(email, password, name);
+    const keyHeader = req.headers["x-nirva-key"];
 
-    return res.status(201).json({
+    // Ensure it's a string
+    if (!keyHeader) {
+      res.status(401).json({ success: false, message: "Missing API key" });
+      return;
+    }
+
+    const key = Array.isArray(keyHeader) ? keyHeader[0] : keyHeader;
+
+    const AppUser = await findAppUser(key);
+
+    const user = await AuthService.register(email, password, name, AppUser);
+
+    // Strip sensitive fields
+    // const { password: _, ...safeUser } = user;
+
+    res.status(201).json({
       success: true,
       message: "User registered successfully",
-      user,
+      user: user,
     });
   } catch (error: any) {
     console.error("Register error:", error);
 
     if (error.message === "User already registered") {
-      return res.status(409).json({
+      res.status(409).json({
         success: false,
         message: "User already registered. Please log in.",
       });
+      return;
     }
 
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: "Something went wrong during registration",
     });
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
+    const key = req.headers["x-nirva-key"];
+    console.log(key);
+
     const token = await AuthService.login(email, password);
 
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax", // or "strict" for CSRF protection
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res
@@ -55,20 +77,18 @@ export const login = async (req: Request, res: Response) => {
     console.error(error);
 
     if (error.message === "Invalid credentials") {
-      return res
+      res
         .status(401)
         .json({ message: "Invalid email or password", success: false });
+      return;
     }
 
     if (error.message === "User not found") {
-      return res
-        .status(404)
-        .json({ message: "User not found", success: false });
+      res.status(404).json({ message: "User not found", success: false });
+      return;
     }
 
-    return res
-      .status(500)
-      .json({ message: "Something went wrong", success: false });
+    res.status(500).json({ message: "Something went wrong", success: false });
   }
 };
 
