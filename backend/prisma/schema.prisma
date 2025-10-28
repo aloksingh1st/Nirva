@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  password  String? //optional if you are using oauth
+  email     String?  @unique
+  oauthId   String?  @unique // nullable for non-OAuth users
+  provider  String
+  createdAt DateTime @default(now())
+  // Apps this user has created
+  App       App[]    @relation("AppCreator")
+
+  // Nullable relation: which app this user is using (consumer)
+  app_id String?
+  app    App?    @relation("AppConsumer", fields: [app_id], references: [id])
+}
+
+model App {
+  id        String   @id @default(uuid())
+  name      String
+  secretKey String   @unique
+  baseUrl   String
+  redirect  String
+  userId    String // creator/owner
+  createdAt DateTime @default(now())
+
+  // Creator/owner relation
+  user User @relation("AppCreator", fields: [userId], references: [id])
+
+  // Optional back-relation for consumers
+  consumers User[] @relation("AppConsumer")
+}
