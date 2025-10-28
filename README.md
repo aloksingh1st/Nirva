@@ -1,4 +1,4 @@
-# Nirva Monorepo
+# Nirva
 
 Nirva is a full-stack authentication and user management platform designed for modern applications. This monorepo consolidates all core components of the project — **backend**, **frontend**, and **SDK** — under a single repository for cleaner collaboration, versioning, and deployment.
 
