@@ -29,9 +29,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const user = await AuthService.register(email, password, name, AppUser);
 
-    // Strip sensitive fields
-    // const { password: _, ...safeUser } = user;
-
     res.status(201).json({
       success: true,
       message: "User registered successfully",

@@ -8,6 +8,7 @@ import "./strategies/google";
 import "./strategies/github";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { dynamicCors } from "./services/dynamicCors";
 
 dotenv.config();
 
@@ -18,12 +19,7 @@ interface TypedRequest extends Request {
   user?: any;
 }
 
-app.use(
-  cors({
-    origin: "http://localhost:5174",
-    credentials: true, // if you are using cookies/auth headers
-  })
-);
+app.use(dynamicCors);
 
 app.use(cookieParser());
 app.use(express.json());
