@@ -24,7 +24,7 @@ jobs:
 
       - name: Add backend repo as remote
         run: |
-          git remote add backend-repo https://github.com/YOUR_USERNAME/backend.git
+          git remote add backend-repo https://github.com/aloksingh1st/auth-microservice.git
           git fetch backend-repo main --tags
 
       - name: Pull backend repo into monorepo/backend
