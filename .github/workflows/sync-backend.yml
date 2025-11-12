@@ -1,0 +1,35 @@
+name: Sync backend with monorepo
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # runs daily at midnight
+  workflow_dispatch:      # allows manual trigger
+  repository_dispatch:    # can be triggered from backend repo
+
+jobs:
+  sync-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout monorepo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add backend repo as remote
+        run: |
+          git remote add backend-repo https://github.com/aloksingh1st/auth-microservice.git
+          git fetch backend-repo main --tags
+
+      - name: Pull backend repo into monorepo/backend
+        run: |
+          git subtree pull --prefix=backend backend-repo main -m "chore: sync backend repo"
+
+      - name: Push changes
+        run: |
+          git push origin main
