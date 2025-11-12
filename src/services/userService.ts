@@ -12,8 +12,8 @@ interface OAuthProfile {
 // 🟢 For Google/GitHub OAuth
 export const findOrCreateUser = async (
   profile: OAuthProfile,
-  provider: string
-  
+  provider: string,
+  key : string
 ) => {
   const email = profile.emails?.[0]?.value;
 
