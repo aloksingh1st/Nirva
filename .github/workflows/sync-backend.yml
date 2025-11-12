@@ -1,10 +1,11 @@
+---
 name: Sync backend with monorepo
 
 on:
+  workflow_dispatch:
+  repository_dispatch:
   schedule:
-    - cron: '0 0 * * *'  # runs daily at midnight
-  workflow_dispatch:      # allows manual trigger
-  repository_dispatch:    # can be triggered from backend repo
+    - cron: '0 0 * * *'
 
 jobs:
   sync-backend:
@@ -23,12 +24,12 @@ jobs:
 
       - name: Add backend repo as remote
         run: |
-          git remote add backend-repo https://github.com/aloksingh1st/auth-microservice.git
+          git remote add backend-repo https://github.com/YOUR_USERNAME/backend.git
           git fetch backend-repo main --tags
 
       - name: Pull backend repo into monorepo/backend
         run: |
-          git subtree pull --prefix=backend backend-repo main -m "chore: sync backend repo"
+          git subtree pull --prefix=backend backend-repo main --squash --allow-unrelated-histories -m "chore: sync backend repo"
 
       - name: Push changes
         run: |
