@@ -22,9 +22,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Add backend repo as remote
+      - name: Add backend repo as remote (with auth)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git remote add backend-repo https://github.com/aloksingh1st/auth-microservice.git
+          git remote add backend-repo https://x-access-token:${GITHUB_TOKEN}@github.com/aloksingh1st/auth-microservice.git
           git fetch backend-repo main --tags
 
       - name: Pull backend repo into monorepo/backend
