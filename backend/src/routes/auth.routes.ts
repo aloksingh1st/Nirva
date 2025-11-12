@@ -2,20 +2,40 @@ import { Router } from "express";
 import passport from "passport";
 import { generateToken } from "../services/tokenService";
 import { login, logout, register } from "../controllers/auth.controller";
+import { findCallbackUriWithSecretKey } from "../services/secretKeyService";
 
 const router = Router();
 
-router.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
+//@ts-ignore
+router.get("/google", (req, res, next) => {
+  const key = req.query["x-nirva-key"];
+  if (!key) {
+    return res.status(400).send("Missing API key");
+  }
+
+  // Pass the API key in the OAuth state parameter
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    state: encodeURIComponent(key.toString()),
+    prompt: "consent",
+  })(req, res, next);
+});
 
 router.get(
   "/google/callback",
   passport.authenticate("google", { session: false, failureRedirect: "/" }),
-  (req, res) => {
+  async (req, res) => {
+    // <-- add async
     // @ts-ignore: Passport adds `user` to the request object
     const token = generateToken(req.user);
+
+    const key = req.query.state
+      ? decodeURIComponent(req.query.state.toString())
+      : null;
+
+    if (!key) {
+      throw new Error("Key is mandatory");
+    }
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -24,14 +44,25 @@ router.get(
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.redirect(`http://localhost:5173/auth/success?token=${token}`);
+    const redirectURI = await findCallbackUriWithSecretKey(key);
+
+    res.redirect(`${redirectURI}?token=${token}`);
   }
 );
 
-router.get(
-  "/github",
-  passport.authenticate("github", { scope: ["user:email"] })
-);
+router.get("/github", (req, res, next) => {
+  const { state } = req.query;
+
+  const authOptions: any = {
+    scope: ["user:email"],
+  };
+
+  if (state) {
+    authOptions.state = encodeURIComponent(state.toString());
+  }
+
+  passport.authenticate("github", authOptions)(req, res, next);
+});
 
 // GitHub OAuth Callback
 router.get(
