@@ -1,4 +1,3 @@
----
 name: Sync backend with monorepo
 
 on:
@@ -17,22 +16,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup git
+      - name: Setup git identity
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Add backend repo as remote (with auth)
+      - name: Add and fetch backend repo
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
-          git remote add backend-repo https://x-access-token:${GITHUB_TOKEN}@github.com/aloksingh1st/auth-microservice.git
+          git remote add backend-repo https://x-access-token:${TOKEN}@github.com/aloksingh1st/auth-microservice.git
           git fetch backend-repo main --tags
 
-      - name: Pull backend repo into monorepo/backend
+      - name: Merge backend into monorepo/backend
         run: |
           git subtree pull --prefix=backend backend-repo main --squash --allow-unrelated-histories -m "chore: sync backend repo"
 
-      - name: Push changes
+      - name: Push changes to monorepo
         run: |
           git push origin main
