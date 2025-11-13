@@ -15,22 +15,36 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup git
+      - name: Setup Git
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global credential.helper ""
+
+      - name: Verify PAT access
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          echo "Verifying token access..."
+          curl -s -H "Authorization: token ${PAT_TOKEN}" https://api.github.com/user | grep login || echo "Token failed."
 
       - name: Add backend repo as remote (private)
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
+          set -e
           git remote add backend-repo https://x-access-token:${PAT_TOKEN}@github.com/aloksingh1st/auth-microservice.git
-          git fetch backend-repo main --tags
+          # Try fetching main; fallback to master if main doesn't exist
+          git fetch backend-repo main --tags || git fetch backend-repo master --tags
 
-      - name: Merge backend into monorepo/backend
+      - name: Ensure backend folder exists
+        run: mkdir -p backend
+
+      - name: Pull backend subtree into monorepo/backend
         run: |
-          git subtree pull --prefix=backend backend-repo main --squash --allow-unrelated-histories -m "chore: sync backend repo"
+          set -e
+          git subtree pull --prefix=backend backend-repo main --squash --allow-unrelated-histories -m "chore: sync backend repo" || \
+          git subtree pull --prefix=backend backend-repo master --squash --allow-unrelated-histories -m "chore: sync backend repo"
 
       - name: Push updated monorepo
-        run: |
-          git push origin main
+        run: git push origin main
