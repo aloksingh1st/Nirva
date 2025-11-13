@@ -33,7 +33,7 @@ jobs:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           set -e
-          git remote add backend-repo https://x-access-token:${PAT_TOKEN}@github.com/aloksingh1st/auth-microservice
+          git remote add backend-repo https://x-access-token:${PAT_TOKEN}@github.com/aloksingh1st/auth-microservice.git
           # Try fetching main; fallback to master if main doesn't exist
           git fetch backend-repo main --tags || git fetch backend-repo master --tags
 
