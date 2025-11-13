@@ -3,7 +3,10 @@ name: Sync backend with monorepo
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * *' # runs daily at midnight UTC
+
+permissions:
+  contents: write  # required for pushing commits to other repos
 
 jobs:
   sync-backend:
@@ -19,32 +22,35 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global credential.helper ""
 
-      - name: Verify PAT access
-        env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+      - name: Verify token access
         run: |
           echo "Verifying token access..."
-          curl -s -H "Authorization: token ${PAT_TOKEN}" https://api.github.com/user | grep login || echo "Token failed."
+          curl -s -H "Authorization: token ${{ secrets.PAT_TOKEN }}" https://api.github.com/user | jq '.login'
+
+      - name: Verify repo visibility
+        run: |
+          echo "Checking target repo visibility..."
+          curl -s -H "Authorization: token ${{ secrets.PAT_TOKEN }}" https://api.github.com/repos/aloksingh1st/auth-microservice | jq '.private, .full_name'
 
       - name: Add backend repo as remote (private)
-        env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           set -e
-          git remote add backend-repo https://x-access-token:${PAT_TOKEN}@github.com/aloksingh1st/auth-microservice.git
-          # Try fetching main; fallback to master if main doesn't exist
+          git remote add backend-repo https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/aloksingh1st/auth-microservice.git
           git fetch backend-repo main --tags || git fetch backend-repo master --tags
 
-      - name: Ensure backend folder exists
-        run: mkdir -p backend
-
-      - name: Pull backend subtree into monorepo/backend
+      - name: Sync backend folder to backend-repo
         run: |
           set -e
-          git subtree pull --prefix=backend backend-repo main --squash --allow-unrelated-histories -m "chore: sync backend repo" || \
-          git subtree pull --prefix=backend backend-repo master --squash --allow-unrelated-histories -m "chore: sync backend repo"
+          mkdir sync-tmp
+          rsync -av --delete ./backend/ ./sync-tmp/
+          cd sync-tmp
+          git init
+          git remote add origin https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/aloksingh1st/auth-microservice.git
+          git checkout -b main || git checkout -b master
+          git add .
+          git commit -m "chore: sync from monorepo $(date -u '+%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+          git push -f origin main || git push -f origin master
 
-      - name: Push updated monorepo
-        run: git push origin main
+      - name: Done
+        run: echo "✅ Backend sync completed successfully!"
